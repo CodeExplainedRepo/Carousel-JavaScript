@@ -1,112 +1,124 @@
-/* SELECT ELEMENTS */
-// CAROUSEL
+// SELECT CAROUSEL
 const carousel = document.querySelector(".carousel");
-// NAVIGATION
-const nav = document.querySelector(".nav");
-// BUTTONS
+
+// SELECT NEXT BUTTON
 const nextButton = document.querySelector(".right-btn");
-const prevBtn = document.querySelector(".left-btn");
 
-/* SELECT THE SLIDES ( Carousel Child elements) */
-const slides = Array.from(carousel.children);
+// SELECT LEFT BUTTON
+const previousButton = document.querySelector(".left-btn");
 
-/* SELECT THE SLIDES ( Carousel Child elements) */
-const dots = Array.from(nav.children);
+// SELECT THE NAV
+const nav = document.querySelector(".nav");
 
-/* GET THE WIDTH OF THE SLIDE */
-const slideWidth = slides[0].getBoundingClientRect().width;
+// SELECT ALL THE DOTS
+const dots = [...nav.children];
 
-/* POSITION THE SLIDES HORIZONTALY */
+// SELECT ALL THE SLIDES INSIDE THE CAROUSEL
+const slides = [...carousel.children];
+
+// CALCULATE THE SLIDE WIDTH
+let slideWidth = slides[0].getBoundingClientRect().width;
+
+// POSITION THE SLIDES HORIZONTALY
 function positionSlides(slides){
-    for(let i = 0; i < slides.length; i++){
-        slides[i].style.left = slideWidth * i + "px";
+    for(let index = 0; index < slides.length; index++){
+        slides[index].style.left = slideWidth * index + "px";
     }
 }
+
 positionSlides(slides);
 
-/* ON RIGHT BUTTON CLICK WE MOVE(TRANSLATE) THE CAROUSEL TO THE LEFT */
-nextButton.addEventListener("click", e => {
+// ON RIGHT BUTTON CLICK, WE MOVE(TranslateX) THE CAROUSEL TO THE LEFT
+nextButton.addEventListener("click", function(){
     const currentSlide = carousel.querySelector(".active");
-
     const nextSlide = currentSlide.nextElementSibling;
-
-    hideBtn(nextSlide, slides);
-
+    
     moveToSlide(carousel, currentSlide, nextSlide);
-
-    moveToDot(nextSlide, slides);
+    hideButton(nextSlide, slides);
+    moveToDot(nextSlide, slides, nav, dots);
 });
 
-/* ON LEFT BUTTON CLICK WE MOVE(TRANSLATE) THE CAROUSEL TO THE RIGHT */
-prevBtn.addEventListener("click", e => {
+// ON LEFT BUTTON CLICK, WE MOVE(TranslateX) THE CAROUSEL TO THE RIGHT
+previousButton.addEventListener("click", function(){
     const currentSlide = carousel.querySelector(".active");
     const previousSlide = currentSlide.previousElementSibling;
-
-    hideBtn(previousSlide, slides);
-
+    
     moveToSlide(carousel, currentSlide, previousSlide);
-
-    moveToDot(previousSlide, slides);
+    hideButton(previousSlide, slides);
+    moveToDot(previousSlide, slides, nav, dots);
 });
 
-/*  MOVE to DOT */
-function moveToDot(slide, slides){
-    let slideIndex = findIndex(slide, slides);
+// ON DOT CLICK
+nav.addEventListener("click", function(e){
+
+    // if we didn't click on a dot, we exit
+    if(e.target === nav) return;
+
+    // SELECT THE CLICKED DOT
+    const targetDot = e.target;
+
+    // SELECT THE CURRENT DOT
+    const currentDot = nav.querySelector(".active");
+
+    // SELECT THE CURRENT SLIDE
+    const currentSlide = carousel.querySelector(".active");
+
+    // find the index of the dot, so we can target the right slide
+    let targetDotIndex = findIndex(targetDot, dots);
+    
+    // SELECT THE TARGET SLIDE
+    const targetSlide = slides[targetDotIndex];
+
+    moveToSlide(carousel, currentSlide, targetSlide);
+    toggleActive(currentDot, targetDot);
+    hideButton(targetSlide, slides);
+})
+
+// MOVE TO DOT
+function moveToDot(targetSlide, slides, nav, dots){
+    let slideIndex = findIndex(targetSlide, slides);
     const currentDot = nav.querySelector(".active");
     const targetDot = dots[slideIndex];
     toggleActive(currentDot, targetDot);
 }
-
-/* MOVE TO SLIDE */
-function moveToSlide(carousel, currentSlide, toSlide){
-    const position = toSlide.style.left;
+// MOVE TO SLIDE
+function moveToSlide(carousel, currentSlide, targetSlide){
+    const position = targetSlide.style.left;
     carousel.style.transform = `translateX(-${position})`;
-    toggleActive(currentSlide, toSlide);
+    toggleActive(currentSlide, targetSlide);
 }
 
-/* HIDE THE LEFT/RIGHT BTN WHEN THERE IS NO PREV/NEXT SLIDE */
-function hideBtn(slide, slides){
-    if(slide === slides[slides.length-1]){
+// Toggle ACTIVE CLASS
+function toggleActive(current, target){
+    current.classList.remove("active");
+    target.classList.add("active");
+}
+
+// HIDE BUTTON
+function hideButton(targetSlide, slides){
+    // If the target slide is the first slide the previous button must be hidden
+    // and the next button must be shown
+    if(targetSlide === slides[0]){
+        previousButton.classList.add("hide");
+        nextButton.classList.remove("hide");
+    }else if(targetSlide === slides[slides.length - 1]){
+        // If the target slide is the last slide the next button must be hidden
+        // and the previous button must be shown
         nextButton.classList.add("hide");
-        prevBtn.classList.remove("hide");
-    }else if(slide === slides[0]){
-        prevBtn.classList.add("hide");
-        nextButton.classList.remove("hide");
+        previousButton.classList.remove("hide");
     }else{
+        // if none of the above is true, we show both the next and prevoius button
+        previousButton.classList.remove("hide");
         nextButton.classList.remove("hide");
-        prevBtn.classList.remove("hide");
     }
 }
 
-/* WHEN WE CLICK ON A DOT FROM THE NAV, WE MOVE TO THE RIGHT SLIDE */
-nav.addEventListener("click", function(e){
-    const currentSlide = carousel.querySelector(".active");
-    const currentDot = nav.querySelector(".active");
-
-    // if the user didn't click a button, then exit the function
-    if(e.target.tagName !== "BUTTON") return;
-
-    const targetDot = e.target;
-
-    let targetDotIndex = findIndex(targetDot, dots);
-
-    const targetSlide = slides[targetDotIndex];
-
-    toggleActive(currentDot, targetDot);
-
-    moveToSlide(carousel, currentSlide, targetSlide);
-    hideBtn(targetSlide, slides);
-});
-
-function toggleActive(from, to){
-    from.classList.remove("active");
-    to.classList.add("active");
-}
-
+// FIND THE INDEX OF AN ITEM, INSIDE AN ARRAY OF ITEMS
 function findIndex(item, items){
-    for(let i = 0; i < dots.length; i++){
-        if(item === items[i]){
-            return i;
+    for(let index = 0; index < items.length; index++){
+        if(item === items[index]){
+            return index;
         }
     }
 }
+

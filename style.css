@@ -7,7 +7,6 @@ body{
     height: 400px;
     margin: 0 auto;
     position: relative;
-    
 }
 
 .carousel-container{
@@ -43,17 +42,17 @@ body{
     top: 50%;
     transform: translateY(-50%);
     background: transparent;
-    border: 0;
+    border: none;
     cursor: pointer;
 }
 
 .btn img{
     width: 20px;
-    height: 20px;;
+    height: 20px;
 }
 
 .left-btn{
-    left: -35px;
+    left:-35px;
 }
 
 .right-btn{
@@ -69,20 +68,34 @@ body{
     justify-content: center;
 }
 
-.nav button{
-    background: rgba( 255, 255, 255,0.3);
+.nav .dot{
+    background: rgba(255, 255, 255, 0.3);
     border: none;
-    width: 5px;
+    width: 15px;
     height: 15px;
-    margin: 10px;
-    cursor: pointer;
     border-radius: 50%;
+    margin: 8px 10px;
+    cursor: pointer;
 }
 
-.nav button.active{
-    background: rgba( 255, 255, 255, 1);
+.dot.active{
+    background: rgba(255, 255, 255, 1);
 }
 
 .hide{
     display: none;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
